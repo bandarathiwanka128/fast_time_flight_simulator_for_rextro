@@ -1,0 +1,245 @@
+<html>
+  <head>
+    <title>Simple Map</title>
+    <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>-->
+
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+    <!--Boostrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./script_1.js"></script>
+    <script src="./script_2.js"></script>
+    <script src="./class.js"></script>
+    <script src="./config.js"></script>
+    <script src="./Graph.js"></script>
+
+  </head>
+  <body onload="main();">
+    
+      <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">FAST TIME FLIGHT PLAN SIMULATOR</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="home.html" style="margin-left: 300px;">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="about.html">About us</a>
+              </li>
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+    
+    <div id="map" class="map1"></div>
+<!--  Sliding Component -->
+    <div id="slidingComponent">
+      <!-- Content for your sliding component goes here -->
+      <button id="closeButton">&times;</button>
+      <img id="headerImage" src="./images/maxresdefault.jpg" alt="Header Image">
+      <div id="infoContainer">
+        <label>Callsign:</label>
+        <p id="callsignLabel">XYZ123</p>
+        <label>Departure Time:</label>
+        <p id="departureTimeLabel">10:00 AM</p>
+        <label>Origin:</label>
+        <p id="originLabel">City A</p>
+        <label>Destination:</label>
+        <p id="destinationLabel">City B</p>
+        <label>Routing:</label>
+        <p id="routingLabel">Some route</p>
+
+        <button type="button" class="btn btn-outline-warning" id="altitude-btn" data-info="" value="" name="" data-custom=""  onclick="showGraph()">Start Plotting</button>
+      </div>
+    </div>
+  <!--  Sliding Component end  -->
+    <div id="buttonContainer">
+      <button id="createCSV" type="button" class="btn btn-warning">Download landed flight data</button>
+    </div>
+    <!--div id="buttonContainer">
+      <button id="collision-btn" type="button" class="btn btn-warning">Download collision Info</button>
+    </div-->
+  <!-- Collision table start-->
+    <div class="table-container">
+      <table id="collision-table" class="styled-table">
+        <thead >
+          <tr class="table-header">
+            <th class="styled-table thead tr">Flight 1</th>
+            <th class="styled-table thead tr">Flight 2</th>
+            <th class="styled-table thead tr">Collided Time</th>
+            <th class="styled-table thead tr">Latitude</th>
+            <th class="styled-table thead tr">Longitude</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  <!-- Collision table end-->
+
+  <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <!-- Navbar content -->
+    <span style="margin-left: 40%;">
+      <button class="tab-button" data-target="chart1" style="color: black;">Altitude Plot</button>
+      <button class="tab-button" data-target="chart2" style="color: black;">Speed Plot</button>
+    </span>
+  </nav>
+
+  <!-- Chart section start-->
+  <div class="tab-container">
+    
+    
+    <!-- Add more buttons for additional charts if needed -->
+
+    <div id="chart1" class="chart-container" data-xdata="" data-ydata="" data-zdata="">
+      <canvas id="canvas1" width="800" height="500" ></canvas>
+    </div>
+    <div id="chart2" class="chart-container" data-xdata="" data-ydata="" data-zdata="">
+      <canvas id="canvas2" width="800" height="500"></canvas>
+    </div>
+    <!-- Add more chart containers for additional charts if needed -->
+  </div>
+  <!-- Chart section end-->
+    
+
+    <!------------------------------FOOTER------------->
+    <footer id="theFooter" class="bg-dark text-light py-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h4>About Us</h4>
+            <p>Simulate the flight plans for the purpose of optimization. Allows users to assess and improve airport and airspace capacity and complexity by simulating actual flight plans and more. The software can provide a true terminal to terminal fast time simulation experience.</p>
+          </div>
+          <div class="col-md-3">
+            <h4>Quick Links</h4>
+            <ul class="list-unstyled">
+              <li><a href="home.html">Home</a></li>
+              <li><a href="about.html">About Us</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h4>Contact Us</h4>
+            <ul class="list-unstyled">
+              <li>University of Ruhuna</li>
+              <li>Hapugala,Galle, Sri Lanka 12345</li>
+              <li>Phone: (555) 555-5555</li>
+              <li>Email: info@example.com</li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <p class="text-center">&copy; MMSG Software. All Rights Reserved.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+
+
+    <!-- 
+     The `defer` attribute causes the callback to execute after the full HTML
+     document has been parsed. For non-blocking uses, avoiding race conditions,
+     and consistent behavior across browsers, consider loading using Promises
+     with https://www.npmjs.com/package/@googlemaps/js-api-loader.
+    -->
+    <!-- old api
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFm_xmflO21dc_2cgcyOdQAdppjLt1lXM&callback=initMap&v=weekly"
+
+    -->
+    
+    <!-- old api - billing account sanoj-->
+      <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKbjLmYVF0r1ijuawrVz5RDis6qOvrg64&libraries=geometry&callback=initMap&v=weekly"
+
+      defer
+    ></script>
+    <!--<script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA-EsCffFZmek7yovunyObGKy_BB9XRmOs&libraries=geometry&callback=initMap&v=weekly"
+      
+      //AIzaSyAKbjLmYVF0r1ijuawrVz5RDis6qOvrg64
+      defer
+    ></script>-->
+  
+    <script src="chart.js"></script>
+
+    <script>
+      button.addEventListener('click', function () {
+        document.getElementById('chart1').scrollIntoView({behavior: 'smooth'})
+      });
+
+
+      function showGraph(){
+        const altitude_btn = document.getElementById('altitude-btn');
+        const targetElement = document.getElementById('chart1');
+        //altitude_btn.addEventListener('click', function() {
+          targetElement.scrollIntoView({ behavior: 'smooth' }); // Scroll to the target element
+          console.log('scrollllll__________');
+        //});
+        console.log('clicked');
+        
+        
+        let value_callsign = altitude_btn.dataset.info;
+        // clicked flight departure time
+        let value_time = altitude_btn.value;
+        // clicked flight callsign
+        let value_name = altitude_btn.name;
+
+        console.log('time = '+value_time);
+        console.log('callsign = '+value_callsign);
+
+        let char1 = document.getElementById("chart1");
+        let char2 = document.getElementById("chart2");
+
+        fetch(apiUrl+`/grp11/backend/altitudes?username=${username}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body : JSON.stringify({ value_time, value_callsign, value_name })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Process the response here
+            console.log('data')
+            console.log(data);
+            //console.log('altitude_btn.data-xdata = '+altitude_btn.data-xdata)
+            
+            char1.setAttribute('data-ydata', data.altitudes);
+            char1.setAttribute('data-xdata', data.waypoints);
+
+           // char1.setAttribute('data-zdata', altitude_btn.data-custom);
+            console.log("Speeds");
+
+            char2.setAttribute('data-ydata', data.speeds);
+            char2.setAttribute('data-xdata', data.waypoints);
+            //char2.setAttribute('data-zdata', altitude_btn.data-custom);
+
+
+            //console.log('data = '+data);
+            window.location.href = `/grp11/login.html?username=${username}`;
+            //window.location.href = `https://demo.eminenceapps.com/grp11/home.html?username=${username}`;
+
+        })
+        .catch(error => {
+            // Handle any errors here
+            //console.error(error);
+        });
+        altitude_btn.addEventListener('click', function() {
+          targetElement.scrollIntoView({ behavior: 'smooth' }); // Scroll to the target element
+        });
+      }
+    </script>
+    
+    
+  </body>
+</html>

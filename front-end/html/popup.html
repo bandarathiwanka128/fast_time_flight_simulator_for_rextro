@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  /* Styles for the popup container */
+  .popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  /* Styles for the popup content */
+  .popup-content {
+    background-color: white; /* Slightly darker shade of white */
+    width: 70%;
+    height: 50%;
+    padding: 20px;
+    border-radius: 10px;
+    /*box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);*/
+    position: relative;
+  }
+
+  /* Close button styles */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+
+  /* Styles to remove background blur when popup is open */
+  body.popup-open {
+    overflow: hidden;
+  }
+
+
+  /* Style for the image inside the popup */
+  .popup-image {
+    max-width: 100%;
+    max-height: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- Button to trigger the popup -->
+<button id="openButton">Open Popup</button>
+
+<!-- Popup container -->
+<div id="popupContainer" class="popup-container">
+  <div class="blurred-space"></div> <!-- Blurred space around popup -->
+  <!-- Popup content -->
+  <div class="popup-content">
+    <span class="close-button" id="closeButton">&times;</span>
+    <h4 style="font-family: monospace;">Flight Information Data</h4>
+    <img class="popup-image" src="./images/DataFormat1.PNG" alt="Popup Image">
+    <br>
+    <h4 style="font-family: monospace;">Waypoint Data</h4>
+    <img style="width: 250px; height: 60px; align-items: center;"  class="popup-image" src="./images/DataFormat2.PNG" alt="Popup Image">
+  </div>
+</div>
+
+<script>
+  // Get references to the elements
+  const openButton = document.getElementById("openButton");
+  const closeButton = document.getElementById("closeButton");
+  const popupContainer = document.getElementById("popupContainer");
+  const blurredSpace = document.querySelector(".blurred-space");
+  const body = document.querySelector("body");
+
+  // Event listener for opening the popup
+  openButton.addEventListener("click", function() {
+    popupContainer.style.display = "flex";
+    body.classList.add("popup-open");
+  });
+
+  // Event listener for closing the popup
+  closeButton.addEventListener("click", function() {
+    popupContainer.style.display = "none";
+    body.classList.remove("popup-open");
+  });
+
+  // Close popup when blurred space is clicked
+  blurredSpace.addEventListener("click", function() {
+    popupContainer.style.display = "none";
+    body.classList.remove("popup-open");
+  });
+</script>
+
+</body>
+</html>

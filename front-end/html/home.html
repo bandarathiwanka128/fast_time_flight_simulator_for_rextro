@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <!-- site metas -->
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <!-- bootstrap css -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!-- style css -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- responsive-->
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- awesome fontfamily -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+  <title>Home</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <style>
+    .head-top {
+      padding-bottom: 100px;
+      margin-bottom: 50px; /* Added margin-bottom to create space */
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    button{
+      margin-top: 5px;
+    }
+
+    .login-box {
+      margin-top: 100px;
+      margin-bottom: 100px;
+      width: 50%;
+      margin: 100px auto;
+      padding: 40px 30px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-title {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 30px;
+      color: black;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .upload-box {
+      margin-top: 100px;
+      margin-bottom: 100px;
+      width: 50%;
+      margin: 100px auto;
+      padding: 40px 30px;
+      background-color: rgba(255,255,255,0.13);
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      opacity: 1;
+    }
+
+    .upload-title {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 30px;
+      color: black;
+    }
+
+    .upload-box label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .upload-box input[type="file"] {
+      display: block;
+    }
+
+    .upload-box input[type="submit"] {
+      display: block;
+      width: 100%;
+    }
+
+    .login-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image: url("images/airplane_wing_sky_111276_1680x1050.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 1;
+        }
+
+        .popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  /* Styles for the popup content */
+  .popup-content {
+    background-color: white; /* Slightly darker shade of white */
+    width: 70%;
+    height: 50%;
+    padding: 20px;
+    border-radius: 10px;
+    /*box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);*/
+    position: relative;
+  }
+
+  /* Close button styles */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+
+  /* Styles to remove background blur when popup is open */
+  body.popup-open {
+    overflow: hidden;
+  }
+
+
+  /* Style for the image inside the popup */
+  .popup-image {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  </style>
+</head>
+<body>
+    <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a class="active" href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="searvices.html">Services</a>
+        <a href="contactinfo.html">Contact info</a>
+         <!--
+        <a href="testimonial.html">Testimonial</a>
+        <a href="works.html">Works</a>
+        <a href="contact.html">Contact</a>-->
+    </div>
+    <header>
+        <!-- header inner -->
+        
+        <div class="head-top">
+            <div class="container-fluid">
+                <div class="row d_flex">
+                    <div class="col-sm-3">
+                        <div class="logo">
+                            <a href="index.html">SKY-NAVIGATOR</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <ul class="social_icon text_align_right d_none">
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-facebook-f"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-twitter"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                        <ul class="email text_align_right">
+                           <!-- <li class="d_none"><a href="login.html"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+                            <li class="d_none"> <a href="Javascript:void(0)"><i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"></i></a> </li>-->
+                            <li>
+                                <button class="openbtn" onclick="openNav()"><img src="images/menu_btn.png"></button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="login-background"></div>
+    <div class="upload-box">
+      <form id="uploadForm" enctype="multipart/form-data">
+        <label>Flight Info</label> <input type="file" name="file" accept=".csv">
+        <br>
+        <label >Waypoints</label> <input type="file" name="file" accept=".csv">
+        <br>
+        <label >Routings</label> <input type="file" name="file" accept=".csv">
+        <br>
+       
+        <input type="submit" class="btn btn-outline-light" value="Upload">
+       
+      </form>
+      <button class="btn btn-outline-warning" id="openButton">Data Format</button>
+      
+    </div>
+
+    <!-- Popup container -->
+    <div id="popupContainer" class="popup-container">
+      <div class="blurred-space"></div> <!-- Blurred space around popup -->
+      <!-- Popup content -->
+      <div class="popup-content">
+        <span class="close-button" id="closeButton">&times;</span>
+        <h3 style="font-family: monospace; color: black; font-size: 17px;">Flight Information Data</h3>
+        <img class="popup-image" src="./images/DataFormat1.PNG" alt="Popup Image">
+        <br>
+        <br>
+        <h3 style="font-family: monospace;color: black; font-size: 17px;">Waypoint Data</h3>
+        <img style="width: 280px; height: 70px; align-items: center;"  class="popup-image" src="./images/DataFormat2.PNG" alt="Popup Image">
+        <br><br>
+        <p style="color: rgb(101, 99, 111);font-family: monospace;">**Please make sure to follow the above data format when uploading data.</p>
+      </div>
+    </div>
+    <script src="config.js"></script>
+
+
+</body>
+
+<script>
+  document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    //console.log(username);
+    //fetch(`http://demo.eminenceapps.com/grp11/backend/upload?username=${username}`, {
+    fetch(apiUrl+`/grp11/backend/upload?username=${username}`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data.message); // Handle response from server
+      const username = data.message;
+
+      //window.location.href = `http://demo.eminenceapps.com/grp11/themap.html?username=${username}`;
+      window.location.href = `/themap.html?username=${username}`;
+
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  });
+
+  
+</script>
+
+<script>
+  const openButton = document.getElementById("openButton");
+  const closeButton = document.getElementById("closeButton");
+  const popupContainer = document.getElementById("popupContainer");
+  const blurredSpace = document.querySelector(".blurred-space");
+  const body = document.querySelector("body");
+
+  // Event listener for opening the popup
+  openButton.addEventListener("click", function() {
+    popupContainer.style.display = "flex";
+    body.classList.add("popup-open");
+  });
+
+  // Event listener for closing the popup
+  closeButton.addEventListener("click", function() {
+    popupContainer.style.display = "none";
+    body.classList.remove("popup-open");
+  });
+
+  // Close popup when blurred space is clicked
+  blurredSpace.addEventListener("click", function() {
+    popupContainer.style.display = "none";
+    body.classList.remove("popup-open");
+  });
+</script>
+
+
+</html>

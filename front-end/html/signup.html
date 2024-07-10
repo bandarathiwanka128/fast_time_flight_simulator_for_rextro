@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- site metas -->
+
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- bootstrap css -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- style css -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- responsive-->
+    <link rel="stylesheet" href="css/responsive.css">
+    <!-- awesome fontfamily -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <title>SignUp</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        form{
+            height: 550px;
+            width: 400px;
+            background-color: rgba(255,255,255,0.13);
+            position: absolute;
+            transform: translate(-50%,-50%);
+            top: 50%;
+            left: 50%;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(8,7,16,0.6);
+            padding: 50px 35px;
+        }
+        .head-top {
+            padding-bottom: 100px;
+            margin-bottom: 50px; /* Added margin-bottom to create space */
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        form *{
+            font-family: 'Poppins',sans-serif;
+            color: #030303;
+            letter-spacing: 0.5px;
+            outline: none;
+            border: none;
+        }
+        form h3{
+            font-size: 32px;
+            font-weight: 500;
+            line-height: 42px;
+            text-align: center;
+        }
+
+        label{
+            display: block;
+            margin-top: 30px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        input{
+            display: block;
+            height: 50px;
+            width: 100%;
+            background-color: rgba(255,255,255,0.07);
+            border-radius: 3px;
+            padding: 0 10px;
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 300;
+        }
+        ::placeholder{
+            color: #474747;
+        }
+        button{
+            margin-top: 5px;
+            width: 100%;
+            background-color: #ffffff;
+            color: #080710;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .login-box {
+            margin-top: 100px;
+            margin-bottom: 100px;
+            width: 50%;
+            margin: 100px auto;
+            padding: 40px 30px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .signup-title {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url("images/body_bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 1;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a class="active" href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <!--a href="searvices.html">Services</a-->
+         <!--
+        <a href="testimonial.html">Testimonial</a>
+        <a href="works.html">Works</a>
+        <a href="contact.html">Contact</a>-->
+    </div>
+    <header>
+        <!-- header inner -->
+        <div class="head-top">
+            <div class="container-fluid">
+                <div class="row d_flex">
+                    <div class="col-sm-3">
+                        <div class="logo">
+                            <a href="index.html">SKY-NAVIGATOR</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <ul class="social_icon text_align_right d_none">
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-facebook-f"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-twitter"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                            <li> <a href="Javascript:void(0)"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                        <ul class="email text_align_right">
+                           <!-- <li class="d_none"><a href="login.html"><i class="fa fa-user" aria-hidden="true"></i></a></li>
+                            <li class="d_none"> <a href="Javascript:void(0)"><i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"></i></a> </li>-->
+                            <li>
+                                <button class="openbtn" onclick="openNav()"><img src="images/menu_btn.png"></button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="login-background"></div>
+    <div id="error-message" class="text-center mt-3"></div>
+        <form>
+            <h3>Sign Up Here</h3>
+    
+            <label for="username">Username</label>
+            <input type="text" placeholder="Email or Phone" id="username">
+    
+            <label for="password">Password</label>
+            <input type="password" placeholder="Password" id="password">
+
+            <label for="password">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="password" placeholder="Confirm password"  required><br>
+    
+            <button onclick="validateForm()">Sign In</button>
+             
+            
+        </form>
+        <!--<form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+        
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+
+            <label for="password">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="password" required><br>
+        
+            <input type="submit" value="Submit" onclick="validateForm()">
+          </form>-->
+    </div>
+   
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/jquery.min.js "></script>
+    <script src="js/bootstrap.bundle.min.js "></script>
+    <script src="js/jquery-3.0.0.min.js "></script>
+    <script src="js/custom.js "></script>
+    <script src="config.js"></script>
+    <script>
+        function validateForm() {
+            event.preventDefault();
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return false;
+            }
+
+            gotoLogin();
+        }
+
+        function gotoLogin(){
+            //event.preventDefault(); // Prevent the form from submitting normally
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            //fetch(`https://demo.eminenceapps.com/grp11/login?username=${username}&password=${password}`, {
+            fetch(apiUrl+`/grp11/backend/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body : JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Process the response here
+                console.log("response received");
+                //console.log('data = '+data);
+                window.location.href = `/login.html?username=${username}`;
+               //window.location.href = `https://demo.eminenceapps.com/grp11/home.html?username=${username}`;
+
+            })
+            .catch(error => {
+                // Handle any errors here
+                //console.error(error);
+            });
+        }
+    </script>
+</body>
+
+
+</html>

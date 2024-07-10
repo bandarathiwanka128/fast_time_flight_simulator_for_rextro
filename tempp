@@ -1,0 +1,18 @@
+const LogInSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    password: {
+        type: String,
+        required: true,
+    },
+});
+
+
+const LogInCollection = mongoose.model("User", LogInSchema);
+
+module.exports = {
+    LogInCollection
+  };
+  
