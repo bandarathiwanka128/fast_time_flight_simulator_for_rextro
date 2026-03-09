@@ -1,306 +1,486 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- basic -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- mobile metas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <!-- site metas -->
-    <title>Sky-Navigator</title>
-    <meta name="keywords" content="">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <!-- bootstrap css -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- style css -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- responsive-->
-    <link rel="stylesheet" href="css/responsive.css">
-    <!-- awesome fontfamily -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
-    <!--<script src="../backend/config.js"></script>-->
-    
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sky-Navigator — Fast Time Flight Simulator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #ffc107;
+      --dark: #0b0b1f;
+      --card: rgba(255,255,255,0.05);
+    }
+
+    html, body { height: 100%; font-family: 'Segoe UI', sans-serif; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+
+    /* Background photo */
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('images/airplane_wing_sky_111276_1680x1050.jpg') center/cover no-repeat;
+      filter: brightness(0.28) saturate(0.6);
+      z-index: 0;
+    }
+
+    /* Dark gradient overlay */
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg,
+        rgba(5,5,20,0.92) 0%,
+        rgba(8,12,40,0.75) 50%,
+        rgba(5,10,30,0.92) 100%);
+      z-index: 1;
+    }
+
+    /* Animated grid */
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 2;
+      background-image:
+        linear-gradient(rgba(255,193,7,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,193,7,0.06) 1px, transparent 1px);
+      background-size: 70px 70px;
+      animation: gridMove 25s linear infinite;
+    }
+    @keyframes gridMove { from { background-position: 0 0; } to { background-position: 70px 70px; } }
+
+    /* Flight path SVG canvas */
+    #flight-canvas {
+      position: absolute; inset: 0; z-index: 3;
+      width: 100%; height: 100%; pointer-events: none;
+    }
+
+    /* Animated planes */
+    .anim-plane {
+      position: absolute; z-index: 4;
+      width: 32px; height: 32px;
+      filter: drop-shadow(0 0 6px rgba(255,193,7,0.8));
+      pointer-events: none;
+    }
+
+    /* Plane flight animations */
+    @keyframes fly1 {
+      0%   { left: -5%; top: 30%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: 105%; top: 18%; opacity: 0; }
+    }
+    @keyframes fly2 {
+      0%   { left: 110%; top: 55%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: -5%; top: 45%; opacity: 0; }
+    }
+    @keyframes fly3 {
+      0%   { left: 20%; top: -5%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: 65%; top: 105%; opacity: 0; }
+    }
+    @keyframes fly4 {
+      0%   { left: -5%; top: 70%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: 80%; top: 25%; opacity: 0; }
+    }
+    @keyframes fly5 {
+      0%   { left: 90%; top: -5%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: 10%; top: 90%; opacity: 0; }
+    }
+    @keyframes fly6 {
+      0%   { left: -5%; top: 50%; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { left: 105%; top: 65%; opacity: 0; }
+    }
+
+    .plane-1 { animation: fly1 18s linear infinite; }
+    .plane-2 { animation: fly2 22s linear infinite 4s; }
+    .plane-3 { animation: fly3 20s linear infinite 8s; }
+    .plane-4 { animation: fly4 25s linear infinite 2s; }
+    .plane-5 { animation: fly5 19s linear infinite 11s; }
+    .plane-6 { animation: fly6 24s linear infinite 6s; }
+
+    /* Waypoint dots */
+    .waypoint-dot {
+      position: absolute; z-index: 4;
+      width: 8px; height: 8px;
+      border-radius: 50%; background: #ffc107;
+      box-shadow: 0 0 0 0 rgba(255,193,7,0.6);
+      animation: waypointPulse 2.5s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes waypointPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,193,7,0.7); }
+      70%  { box-shadow: 0 0 0 12px rgba(255,193,7,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,193,7,0); }
+    }
+
+    /* Radar sweep */
+    .radar {
+      position: absolute; z-index: 3;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,193,7,0.15);
+      top: 60%; left: 15%;
+      pointer-events: none;
+    }
+    .radar::before, .radar::after {
+      content: ''; position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255,193,7,0.1);
+    }
+    .radar::before { inset: 20%; }
+    .radar::after  { inset: 40%; }
+    .radar-sweep {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(
+        rgba(255,193,7,0.25) 0deg,
+        rgba(255,193,7,0.0) 60deg,
+        transparent 60deg
+      );
+      animation: radarSpin 4s linear infinite;
+    }
+    @keyframes radarSpin { to { transform: rotate(360deg); } }
+
+    /* Radar 2 (smaller, different position) */
+    .radar2 {
+      position: absolute; z-index: 3;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      border: 1px solid rgba(100,200,255,0.15);
+      top: 15%; right: 20%;
+      pointer-events: none;
+    }
+    .radar2::before {
+      content: ''; position: absolute; inset: 25%;
+      border-radius: 50%;
+      border: 1px solid rgba(100,200,255,0.1);
+    }
+    .radar2-sweep {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(
+        rgba(100,200,255,0.2) 0deg,
+        rgba(100,200,255,0) 50deg,
+        transparent 50deg
+      );
+      animation: radarSpin 3s linear infinite reverse;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+    }
+    .brand {
+      font-size: 22px; font-weight: 800; color: #fff;
+      letter-spacing: 1px; text-decoration: none;
+    }
+    .brand span { color: var(--gold); }
+    .nav-links { display: flex; gap: 12px; }
+    .btn-nav-outline {
+      padding: 9px 22px; border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.25); color: #ddd;
+      background: transparent; font-size: 14px; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-nav-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-nav-solid {
+      padding: 9px 22px; border-radius: 24px;
+      background: var(--gold); color: #000; border: none;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-nav-solid:hover { background: #e0a800; color: #000; }
+
+    /* ── HERO CONTENT ── */
+    .hero-body {
+      flex: 1; position: relative; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 40px 24px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      background: rgba(255,193,7,0.15);
+      border: 1px solid rgba(255,193,7,0.35);
+      color: var(--gold); font-size: 12px; font-weight: 600;
+      padding: 6px 18px; border-radius: 20px;
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 900; color: #fff; line-height: 1.1;
+      margin-bottom: 22px; max-width: 800px;
+    }
+    .hero-title span { color: var(--gold); }
+
+    .hero-sub {
+      font-size: 17px; color: rgba(255,255,255,0.55);
+      max-width: 560px; line-height: 1.7; margin-bottom: 40px;
+    }
+
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary-lg {
+      padding: 15px 40px; border-radius: 30px;
+      background: var(--gold); color: #000; border: none;
+      font-size: 16px; font-weight: 800; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+      box-shadow: 0 0 30px rgba(255,193,7,0.3);
+    }
+    .btn-primary-lg:hover { background: #e0a800; transform: translateY(-2px); box-shadow: 0 0 40px rgba(255,193,7,0.45); }
+    .btn-ghost-lg {
+      padding: 15px 40px; border-radius: 30px;
+      background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 16px; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .btn-ghost-lg:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── STEPS SECTION ── */
+    .steps-section {
+      background: #07071a;
+      padding: 80px 24px;
+    }
+    .section-label {
+      text-align: center; font-size: 12px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 12px;
+    }
+    .section-title {
+      text-align: center; font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 800; color: #fff; margin-bottom: 60px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px; max-width: 1000px; margin: 0 auto;
+    }
+
+    .step-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 32px 24px;
+      text-align: center;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .step-card:hover { border-color: rgba(255,193,7,0.4); transform: translateY(-4px); }
+
+    .step-number {
+      position: absolute; top: -14px; left: 50%;
+      transform: translateX(-50%);
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gold); color: #000;
+      font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+    .step-card h3 { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .step-card p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+    .step-card a {
+      display: inline-block; margin-top: 18px;
+      padding: 8px 22px; border-radius: 20px;
+      background: var(--gold); color: #000;
+      font-size: 13px; font-weight: 700;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .step-card a:hover { background: #e0a800; }
+
+    /* ── FEATURES ── */
+    .features-section {
+      background: linear-gradient(180deg, #07071a 0%, #0b0b1f 100%);
+      padding: 80px 24px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px; max-width: 900px; margin: 0 auto;
+    }
+    .feat-card {
+      background: rgba(255,193,7,0.04);
+      border: 1px solid rgba(255,193,7,0.12);
+      border-radius: 12px; padding: 24px 20px; text-align: center;
+    }
+    .feat-card .feat-icon { font-size: 30px; margin-bottom: 12px; display: block; }
+    .feat-card h4 { font-size: 15px; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+    .feat-card p { font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      background: #050514;
+      padding: 24px;
+      text-align: center;
+      font-size: 13px; color: rgba(255,255,255,0.25);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .site-footer a { color: var(--gold); text-decoration: none; }
+  </style>
 </head>
-<!-- body -->
+<body>
 
-<body class="main-layout">
-    <!-- loader  -->
-    <div class="loader_bg">
-        <div class="loader"><img src="images/loading.gif" alt="" /></div>
+<!-- ══ HERO ══════════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- Animated background layers -->
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grid"></div>
+
+  <!-- SVG flight paths -->
+  <svg id="flight-canvas" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <style>
+        .fpath { fill:none; stroke:rgba(255,193,7,0.18); stroke-width:1.5; stroke-dasharray:8 6; animation: dashMove 3s linear infinite; }
+        .fpath2 { fill:none; stroke:rgba(100,200,255,0.14); stroke-width:1; stroke-dasharray:6 8; animation: dashMove 4s linear infinite reverse; }
+        @keyframes dashMove { to { stroke-dashoffset: -56; } }
+      </style>
+    </defs>
+    <path class="fpath"  d="M-50,280 Q200,180 420,320 T900,200"/>
+    <path class="fpath"  d="M-50,520 Q300,400 650,480 T1400,350"/>
+    <path class="fpath2" d="M1450,150 Q1100,250 750,180 T100,300"/>
+    <path class="fpath2" d="M800,-30 Q700,200 500,350 T200,650"/>
+  </svg>
+
+  <!-- Animated planes -->
+  <img class="anim-plane plane-1" src="images/planes/0.png"   alt="" style="transform:rotate(0deg)">
+  <img class="anim-plane plane-2" src="images/planes/180.png" alt="" style="transform:rotate(180deg)">
+  <img class="anim-plane plane-3" src="images/planes/330.png" alt="" style="transform:rotate(330deg)">
+  <img class="anim-plane plane-4" src="images/planes/40.png"  alt="" style="transform:rotate(40deg)">
+  <img class="anim-plane plane-5" src="images/planes/220.png" alt="" style="transform:rotate(220deg)">
+  <img class="anim-plane plane-6" src="images/planes/10.png"  alt="" style="transform:rotate(10deg)">
+
+  <!-- Waypoint dots -->
+  <div class="waypoint-dot" style="left:18%;top:38%"></div>
+  <div class="waypoint-dot" style="left:35%;top:22%"></div>
+  <div class="waypoint-dot" style="left:55%;top:45%"></div>
+  <div class="waypoint-dot" style="left:72%;top:28%"></div>
+  <div class="waypoint-dot" style="left:85%;top:60%"></div>
+  <div class="waypoint-dot" style="left:42%;top:70%"></div>
+  <div class="waypoint-dot" style="left:62%;top:72%"></div>
+
+  <!-- Radar 1 -->
+  <div class="radar"><div class="radar-sweep"></div></div>
+  <!-- Radar 2 -->
+  <div class="radar2"><div class="radar2-sweep"></div></div>
+
+  <nav class="top-nav">
+    <a class="brand" href="index.html">Sky<span>Navigator</span></a>
+    <div class="nav-links">
+      <a href="login.html" class="btn-nav-outline">Log In</a>
+      <a href="signup.html" class="btn-nav-solid">Sign Up</a>
     </div>
-    <!-- end loader -->
-    <div id="mySidepanel" class="sidepanel">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <a class="active" href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="contactinfo.html">Contact</a>
+  </nav>
+
+  <div class="hero-body">
+    <div class="badge-pill">✈ Flight Simulation Platform</div>
+
+    <h1 class="hero-title">
+      Fast-Time Flight<br>
+      <span>Plan Simulator</span>
+    </h1>
+
+    <p class="hero-sub">
+      Upload your flight data, visualise real-time aircraft movement across
+      the map, detect conflicts, and analyse altitude &amp; speed profiles —
+      all in one place.
+    </p>
+
+    <div class="hero-cta">
+      <a href="login.html" class="btn-primary-lg">🚀 Get Started</a>
+      <a href="about.html" class="btn-ghost-lg">Learn More</a>
     </div>
-    <!-- header -->
-    <header>
-        <!-- header inner -->
-        <div class="head-top">
-            <div class="container-fluid">
-                <div class="row d_flex">
-                    <div class="col-sm-3">
-                        <div class="logo">
-                            <a href="index.html">Sky-Navigator</a>
-                        </div>
-                    </div>
-                    <div class="col-sm-5">
-                        <ul class="social_icon text_align_right d_none">
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-facebook-f"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-twitter"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-4">
-                        <ul class="email text_align_right">
-                            <li class="d_none"><a href="login.html"><i class="fa fa-user" aria-hidden="true"></i></a></li>
-                            <li class="d_none"> <a href="Javascript:void(0)"><i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"></i></a> </li>
-                            <li>
-                                <button class="openbtn" onclick="openNav()"><img src="images/menu_btn.png"></button>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <style>
-            .login-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 90%;
-            z-index: -1;
-            background-image: url("images/airplane_wing_sky_111276_1680x1050.jpg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            opacity: 1;
-        }
-        </style>
-    </header>
-    <!-- end header -->
-    <!-- start slider section -->
-    <!--<div class="login-background"></div>-->
-    <div id="top_section" class=" banner_main">
-        <div class="login-background"></div>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#myCarousel" data-slide-to="1"></li>
-                            <li data-target="#myCarousel" data-slide-to="2"></li>
-                        </ol>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="container-fluid">
-                                    <div class="carousel-caption relative">
-                                        <div class="row d_flex">
-                                            <div class="col-md-6">
-                                                <div class="con_img">
-                                                    <!--<figure><img class="img_responsive" src="images/top_img.png" alt="#" /></figure>-->
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="bluid">
-                                                    <h1>Fast-time Flight Plan Simulator</h1>
-                                                    <p>Sky Nevigator is a flight time plane simulator software designed to provide a realistic and immersive flying experience for users.
-                                                    </p>
-                                                    <p id="hidden-paragraph" style="display: none;">With Sky Navigator, users can simulate flying different types of aircraft in various weather conditions 
-                                                        and environments,with a range of flight parameters that mimic real-life flight operations.
-                                                        Users can choose from a wide range of aircraft and airports, as well as customize their flight settings to match thier experience level and personal
-                                                        professions.
-                                                        Overall, Sky Navigator is an excellent tool for flight enthusiasts, aviation students and professional pilots who want to hone thier skills, gain experiene,or 
-                                                        simply enjoy the thrill of flying without leaving the comfort of thier own computer.
-                                                    </p>
+  </div>
 
-                                                    <a id="read-more-link" class="read_more" href="javascript:void(0)" onclick="toggleParagraph()">Read More</a>
+</section>
 
-                                                    <script>
-                                                    function toggleParagraph() {
-                                                        var paragraph = document.getElementById("hidden-paragraph");
-                                                        var link = document.getElementById("read-more-link");
+<!-- ══ HOW IT WORKS ══════════════════════════════════════════ -->
+<section class="steps-section">
+  <p class="section-label">How It Works</p>
+  <h2 class="section-title">3 Simple Steps to Start</h2>
 
-                                                        if (paragraph.style.display === "none") {
-                                                        paragraph.style.display = "block";
-                                                        link.textContent = "Read Less";
-                                                        } else {
-                                                        paragraph.style.display = "none";
-                                                        link.textContent = "Read More";
-                                                        }
-                                                    }
-                                                    </script>
+  <div class="steps-grid">
 
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="container-fluid">
-                                    <div class="carousel-caption relative">
-                                        <div class="row d_flex">
-                                            <div class="col-md-6">
-                                                <div class="con_img">
-                                                    <!--<figure><img class="img_responsive" src="images/top_img.png" alt="#" /></figure>-->
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="bluid">
-                                                    <h1>Fast-time Flight Plan Simulator</h1>
-                                                    <p>The Sky Navigator is an advanced system designed to precisely locate and track the paths of planes, accurately simulating their real-time movements.
-                                                    </p>
-                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="container-fluid">
-                                    <div class="carousel-caption relative">
-                                        <div class="row d_flex">
-                                            <div class="col-md-6">
-                                                <div class="con_img">
-                                                   <!-- <figure><img class="img_responsive" src="images/top_img.png" alt="#" /></figure>-->
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="bluid">
-                                                    <h1>Fast-time Flight Plan Simulator</h1>
-                                                    <p>Enhance your experience by uploading CSV data and simulating aircraft operations
-                                                    </p>
-                                                   
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
-                            <i class="fa fa-angle-left" aria-hidden="true"></i>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
-                            <i class="fa fa-angle-right" aria-hidden="true"></i>
-                            <span class="sr-only">Next</span>
-                        </a>
-
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="step-card">
+      <span class="step-number">1</span>
+      <span class="step-icon">🔐</span>
+      <h3>Login or Sign Up</h3>
+      <p>Create a free account or log in. Your data is stored privately in your own database.</p>
+      <a href="login.html">Login →</a>
     </div>
-    
-    <footer>
-        <div class="footer" >
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                   
-                        <a class="logo_bottom" href="index.html">Sky-Navigator</a>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                  <div class="Informa conta ">
-                     <h3>Contact Us</h3>
-                     <ul>
-                        <li> <a href="Javascript:void(0) " style="color: rgb(80, 80, 80); "> <i class="fa fa-map-marker " aria-hidden="true "></i> Location
-                           </a>
-                        </li>
-                        <li> <a href="Javascript:void(0) " style="color: rgb(81, 81, 81);"><i class="fa fa-phone " aria-hidden="true "></i> Call +01 1234567890
-                           </a>
-                        </li>
-                        <li> <a href="Javascript:void(0) " style="color: rgb(80, 80, 80);"> <i class="fa fa-envelope " aria-hidden="true "></i> demo@gmail.com
-                           </a>
-                        </li>
-                     </ul>
-                     
-                  </div>
-               </div>
-               <div class="col-md-3 col-sm-6 ">
-                        <div class="Informa helpful">
-                            <h3>INFO</h3>
-                            <ul>
-                                <li>Readable content of
-                                </li>
-                                <li>a page when looking
-                                </li>
-                                <li>at its layoutreadable
-                                </li>
-                                <li>content of a page
-                                </li>
-                                <li>when looking at its
-                                </li>
-                                <li>layout
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                  <div class="Informa ">
-                     <h3>Centers</h3>
-                     <ul>
-                        <li>Readable content of                              
-                        </li>
-                        <li>a page when looking                           
-                        </li>
-                        <li>at its layoutreadable                          
-                        </li>
-                        <li>content of a page                             
-                        </li>
-                        <li>when looking at its                         
-                        </li>
-                        <li>layout                          
-                        </li>
-                     </ul>
-                  </div>
-               </div>
-               <div class="col-md-3 col-sm-6">
-                <div class="Informa">
-                    <h3>GET SOCIAL</h3>
-                    <ul class="social_icon d_none">
-                        <li> <a href="Javascript:void(0)"><i class="fa fa-facebook-f"></i></a></li>
-                        <li> <a href="Javascript:void(0)"><i class="fa fa-twitter"></i></a></li>
-                        <li> <a href="Javascript:void(0)"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                        <li> <a href="Javascript:void(0)"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                        <li> <a href="Javascript:void(0)"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            </div>
-            <div class="copyright text_align_center ">
-               <div class="container ">
-                  <div class="row ">
-                     <div class="col-md-12 ">
-                    
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      </footer>
-      <!-- end footer -->
-      <!-- Javascript files-->
-      <script src="js/jquery.min.js "></script>
-      <script src="js/bootstrap.bundle.min.js "></script>
-      <script src="js/jquery-3.0.0.min.js "></script>
-      <script src="js/custom.js "></script>
-   </body>
+
+    <div class="step-card">
+      <span class="step-number">2</span>
+      <span class="step-icon">📂</span>
+      <h3>Upload CSV Files</h3>
+      <p>Upload 3 CSV files: <strong style="color:#ffc107">Flight Info</strong>, <strong style="color:#ffc107">Waypoints</strong>, and <strong style="color:#ffc107">Routing</strong> data.</p>
+      <a href="login.html">Upload Data →</a>
+    </div>
+
+    <div class="step-card">
+      <span class="step-number">3</span>
+      <span class="step-icon">🗺️</span>
+      <h3>Watch the Simulation</h3>
+      <p>See aircraft moving in real time on the map. Click any plane to view its details and altitude plot.</p>
+      <a href="login.html">View Map →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ FEATURES ══════════════════════════════════════════════ -->
+<section class="features-section">
+  <p class="section-label">Features</p>
+  <h2 class="section-title">What You Get</h2>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <span class="feat-icon">🛫</span>
+      <h4>Live Flight Tracking</h4>
+      <p>Planes move across the map in simulated time, showing real departure routes.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">⚠️</span>
+      <h4>Collision Detection</h4>
+      <p>Automatic alerts when two aircraft come within dangerous proximity of each other.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">📈</span>
+      <h4>Altitude &amp; Speed Plots</h4>
+      <p>Interactive charts showing altitude and speed profile for any selected flight.</p>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">⬇️</span>
+      <h4>Export Data</h4>
+      <p>Download landed flight records as a CSV file for further analysis.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  &copy; 2024 SkyNavigator — Fast Time Flight Plan Simulator &nbsp;|&nbsp;
+  <a href="login.html">Login</a> &nbsp;·&nbsp;
+  <a href="signup.html">Sign Up</a> &nbsp;·&nbsp;
+  <a href="about.html">About</a>
+</footer>
+
+</body>
 </html>

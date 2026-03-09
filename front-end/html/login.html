@@ -3,27 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <!-- site metas -->
 
     <meta name="keywords" content="">
     <meta name="description" content="">
     <meta name="author" content="">
+
     <!-- bootstrap css -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- style css -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- responsive-->
+    <!-- responsive -->
     <link rel="stylesheet" href="css/responsive.css">
     <!-- awesome fontfamily -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
     <title>Login</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!--<script src="../backend/config.js"></script>-->
 
     <style>
         form{
@@ -41,10 +35,9 @@
             padding: 50px 35px;
         }
         .head-top {
-       
             margin-top: 0px;
             padding-bottom: 100px;
-            margin-bottom: 50px; /* Added margin-bottom to create space */
+            margin-bottom: 50px;
         }
         body {
             display: flex;
@@ -88,7 +81,7 @@
             color: #474747;
         }
         button{
-            margin-top: 50px;
+            margin-top: 30px;
             width: 100%;
             background-color: #ffffff;
             color: #080710;
@@ -98,28 +91,17 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        
-        .login-box {
-            margin-top: 100px;
-            margin-bottom: 100px;
-            width: 50%;
-            margin: 100px auto;
-            padding: 40px 30px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-title {
-            font-size: 28px;
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .msg {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
             text-align: center;
-            margin-bottom: 30px;
-            color : black;
+            display: none;
         }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .msg.success { background: rgba(40,167,69,0.25); border: 1px solid #28a745; color: #90ee90; display: block; }
+        .msg.error   { background: rgba(220,53,69,0.25);  border: 1px solid #dc3545; color: #ff8080; display: block; }
 
         .login-background {
             position: absolute;
@@ -133,22 +115,12 @@
             background-size: cover;
             opacity: 1;
         }
-
-        
     </style>
 </head>
+
 <body>
-    <div id="mySidepanel" class="sidepanel">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-        <a class="active" href="index.html">Home</a>
-        <a href="about.html">About</a>
-         <!--
-        <a href="testimonial.html">Testimonial</a>
-        <a href="works.html">Works</a>
-        <a href="contact.html">Contact</a>-->
-    </div>
+
     <header>
-        <!-- header inner -->
         <div class="head-top">
             <div class="container-fluid">
                 <div class="row d_flex">
@@ -159,105 +131,93 @@
                     </div>
                     <div class="col-sm-5">
                         <ul class="social_icon text_align_right d_none">
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-facebook-f"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-twitter"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
-                            <li> <a href="Javascript:void(0)"><i class="fa fa-youtube-play" aria-hidden="true"></i></a></li>
+                            <li><a href="#"><i class="fa fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                            <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+                            <li><a href="#"><i class="fa fa-youtube-play"></i></a></li>
                         </ul>
                     </div>
-                    
+
                     <div class="col-sm-4">
-                        <ul class="email text_align_right">
-                           <!-- <li class="d_none"><a href="login.html"><i class="fa fa-user" aria-hidden="true"></i></a></li>
-                            <li class="d_none"> <a href="Javascript:void(0)"><i class="fa fa-search" style="cursor: pointer;" aria-hidden="true"></i></a> </li>-->
-                            <li>
-                                <button class="openbtn" onclick="openNav()"><img src="images/menu_btn.png"></button>
-                            </li>
-                        </ul>
+                        <ul class="email text_align_right"></ul>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </header>
-    
+
     <div class="login-background"></div>
-    <div id="error-message" class="text-center mt-3"></div>
-    <div>
-        <form>
-            <h3>Login Here</h3>
-    
-            <label for="username">Username</label>
-            <input type="text" placeholder="Email or Phone" id="username">
-    
-            <label for="password">Password</label>
-            <input type="password" placeholder="Password" id="password">
-    
-            <button onclick="checkUsername()">Log In</button>
-             <a href="/signup.html">Create Account</a>
-            
-        </form>
-        <!--<form id="loginForm">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required><br>
-        
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br>
-        
-            <input type="submit" value="Submit" onclick="checkUsername()">
-          </form>
-        <p class="text-center mt-3">
-            <a href="/grp11/signup.html">Create Account</a>
-        </p>-->
-    </div>
-   
-    
+
+    <form>
+        <h3>Login Here</h3>
+
+        <label for="username">Username</label>
+        <input type="text" placeholder="Email or Phone" id="username">
+
+        <label for="password">Password</label>
+        <input type="password" placeholder="Password" id="password">
+
+        <button id="loginBtn" onclick="checkUsername()">Log In</button>
+        <div id="loginMsg" class="msg"></div>
+        <a href="signup.html" style="display:block;text-align:center;margin-top:14px;color:#ccc;font-size:14px;">Create Account</a>
+    </form>
+
+    <!-- Load config.js FIRST -->
+    <script src="../js/config.js"></script>
+
+    <!-- Basic external libs -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>      
-    <script src="js/jquery.min.js "></script>
-    <script src="js/bootstrap.bundle.min.js "></script>
-    <script src="js/jquery-3.0.0.min.js "></script>
-    <script src="js/custom.js "></script>
-    <script src="config.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <!-- LOGIN SCRIPT -->
     <script>
-        //import { apiUrl } from '../backend/config.js';
+        function showMsg(text, type) {
+            const el = document.getElementById('loginMsg');
+            el.textContent = text;
+            el.className = 'msg ' + type;
+        }
 
-        //console.log(apiUrl);
-        function checkUsername(){
-            event.preventDefault(); // Prevent the form from submitting normally
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
+        function checkUsername() {
+            event.preventDefault();
 
-            //const formData = new FormData(this); // Get form data
-            
-            //fetch(`https://demo.eminenceapps.com/grp11/login`, {
-            fetch(apiUrl+`/grp11/backend/login`, {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            const btn = document.getElementById("loginBtn");
+
+            if (!username || !password) {
+                showMsg('Please enter username and password.', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+
+            fetch(BASE_URL + `/grp11/backend/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body : JSON.stringify({ username, password })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
             })
             .then(response => response.json())
             .then(data => {
-                // Process the response here
-                console.log("response received");
-                //console.log('data = '+data);
-            //window.location.href = apiUrl+`/grp11/home.html?username=${username}`;
-            window.location.href = `/home.html?username=${username}`;
-
+                if (data.success) {
+                    showMsg('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = `home.html?username=${encodeURIComponent(username)}`;
+                    }, 800);
+                } else {
+                    showMsg('Invalid username or password.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Log In';
+                }
             })
             .catch(error => {
-                // Handle any errors here
-                //console.error(error);
+                showMsg('Connection error. Is the server running?', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Log In';
             });
         }
-        
     </script>
 
 </body>
-
-
 </html>

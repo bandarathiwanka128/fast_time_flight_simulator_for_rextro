@@ -1,245 +1,317 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Simple Map</title>
-    <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>-->
+<head>
+  <title>Fast Time Flight Plan Simulator</title>
 
-    <link rel="stylesheet" type="text/css" href="./style.css" />
-    <!--Boostrap-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="./script_1.js"></script>
-    <script src="./script_2.js"></script>
-    <script src="./class.js"></script>
-    <script src="./config.js"></script>
-    <script src="./Graph.js"></script>
+  <!-- CONFIG must be first -->
+  <script src="js/config.js"></script>
 
-  </head>
-  <body onload="main();">
-    
-      <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">FAST TIME FLIGHT PLAN SIMULATOR</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="home.html" style="margin-left: 300px;">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="about.html">About us</a>
-              </li>
-            </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-          </div>
-        </div>
-      </nav>
-    
-    <div id="map" class="map1"></div>
-<!--  Sliding Component -->
-    <div id="slidingComponent">
-      <!-- Content for your sliding component goes here -->
-      <button id="closeButton">&times;</button>
-      <img id="headerImage" src="./images/maxresdefault.jpg" alt="Header Image">
-      <div id="infoContainer">
-        <label>Callsign:</label>
-        <p id="callsignLabel">XYZ123</p>
-        <label>Departure Time:</label>
-        <p id="departureTimeLabel">10:00 AM</p>
-        <label>Origin:</label>
-        <p id="originLabel">City A</p>
-        <label>Destination:</label>
-        <p id="destinationLabel">City B</p>
-        <label>Routing:</label>
-        <p id="routingLabel">Some route</p>
+  <!-- App scripts (load before Maps callback) -->
+  <script src="js/class.js"></script>
+  <script src="js/Graph.js"></script>
+  <script src="js/script_2.js"></script>
+  <script src="js/script_1.js"></script>
 
-        <button type="button" class="btn btn-outline-warning" id="altitude-btn" data-info="" value="" name="" data-custom=""  onclick="showGraph()">Start Plotting</button>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Google Maps -->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKQmKH9sEMretHWkYag0FMg7VFCNRNC_8&libraries=geometry&callback=initMap"
+    async defer>
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Segoe UI', sans-serif; background: #0d0d1a; color: #fff; overflow: hidden; }
+
+    /* ── NAVBAR ─────────────────────── */
+    .navbar { height: 56px; z-index: 1000; flex-shrink: 0; }
+
+    /* ── MAP ────────────────────────── */
+    #map {
+      position: fixed;
+      top: 56px; left: 0; right: 0; bottom: 0;
+      width: 100%;
+      height: calc(100vh - 56px);
+    }
+
+    /* ── LOADING OVERLAY ────────────── */
+    #map-loader {
+      position: fixed;
+      top: 56px; left: 0; right: 0; bottom: 0;
+      background: rgba(13,13,27,0.9);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; z-index: 2000;
+    }
+    .spinner {
+      width: 52px; height: 52px;
+      border: 4px solid rgba(255,193,7,0.2);
+      border-top-color: #ffc107;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #map-loader p { color: #ffc107; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+
+    /* ── FLIGHT INFO PANEL (slide in from left) ── */
+    #slidingComponent {
+      position: fixed;
+      top: 56px; left: -360px;
+      width: 320px;
+      height: calc(100vh - 56px);
+      background: linear-gradient(175deg, #0b0b24 0%, #161640 100%);
+      border-right: 1px solid rgba(255,193,7,0.25);
+      box-shadow: 6px 0 24px rgba(0,0,0,0.6);
+      z-index: 999;
+      transition: left 0.3s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    #slidingComponent.open { left: 0; }
+
+    #closeButton {
+      position: absolute; top: 12px; right: 14px;
+      background: transparent; border: none;
+      color: #ffc107; font-size: 20px; cursor: pointer; z-index: 1; line-height: 1;
+    }
+    #closeButton:hover { color: #fff; }
+
+    #headerImage { width: 100%; height: 150px; object-fit: cover; display: block; }
+
+    #infoContainer { padding: 16px 18px 20px; }
+    #infoContainer label {
+      display: block; margin-top: 14px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #ffc107;
+    }
+    #infoContainer p {
+      font-size: 14px; color: #dde; margin-top: 3px; line-height: 1.4; height: auto;
+    }
+    #altitude-btn {
+      margin-top: 20px; width: 100%; padding: 11px;
+      font-size: 14px; font-weight: 600; border-radius: 8px;
+    }
+
+    /* ── DOWNLOAD BUTTON ────────────── */
+    #buttonContainer {
+      position: fixed; bottom: 20px; right: 18px; z-index: 998;
+    }
+    #createCSV {
+      font-size: 12px; padding: 8px 18px; border-radius: 20px;
+      background: #ffc107; color: #000; border: none; cursor: pointer;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.45); font-weight: 600;
+    }
+    #createCSV:hover { background: #e0a800; }
+
+    /* ── COLLISION STRIP ────────────── */
+    #collision-strip {
+      position: fixed;
+      bottom: 60px; left: 0; right: 0;
+      max-height: 0; overflow: hidden;
+      background: rgba(10,10,26,0.95);
+      border-top: 2px solid #ff4444;
+      z-index: 997;
+      transition: max-height 0.3s ease;
+    }
+    #collision-strip.has-data { max-height: 160px; overflow-y: auto; }
+
+    .styled-table { width: 100%; border-collapse: collapse; font-size: 12px; color: #dde; }
+    .styled-table th {
+      background: #ff4444; color: #fff; padding: 7px 14px;
+      text-align: left; font-weight: 700; white-space: nowrap; font-size: 11px;
+    }
+    .styled-table td { padding: 5px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .styled-table tbody tr:hover { background: rgba(255,68,68,0.1); }
+
+    /* ── CHART PANEL (slides up from bottom) ── */
+    #chart-panel {
+      position: fixed;
+      bottom: -480px; left: 0; right: 0;
+      height: 460px;
+      background: #0d0d1a;
+      border-top: 2px solid #ffc107;
+      z-index: 998;
+      transition: bottom 0.38s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+    }
+    #chart-panel.open { bottom: 0; }
+
+    #chart-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px;
+      background: #111128; border-bottom: 1px solid rgba(255,193,7,0.15);
+      flex-shrink: 0;
+    }
+    .chart-tabs { display: flex; gap: 10px; }
+    .tab-button {
+      background: rgba(255,255,255,0.07);
+      color: #ccc;
+      border: 1px solid rgba(255,193,7,0.3);
+      padding: 7px 20px; border-radius: 20px;
+      cursor: pointer; font-size: 13px; font-weight: 500;
+      transition: all 0.18s;
+    }
+    .tab-button:hover { background: rgba(255,193,7,0.15); color: #ffc107; }
+    .tab-button.active { background: #ffc107; color: #000; border-color: #ffc107; font-weight: 700; }
+    #close-chart-btn {
+      background: transparent; border: none; color: #888;
+      font-size: 18px; cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    #close-chart-btn:hover { color: #fff; }
+
+    #chart-body { flex: 1; padding: 16px 20px; overflow: hidden; position: relative; }
+    .chart-container { display: none; width: 100%; height: 100%; }
+    .chart-container.active { display: block; }
+    .chart-container canvas { width: 100% !important; height: 360px !important; }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">✈ FAST TIME FLIGHT PLAN SIMULATOR</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="home.html">Upload Data</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+        </ul>
       </div>
     </div>
-  <!--  Sliding Component end  -->
-    <div id="buttonContainer">
-      <button id="createCSV" type="button" class="btn btn-warning">Download landed flight data</button>
-    </div>
-    <!--div id="buttonContainer">
-      <button id="collision-btn" type="button" class="btn btn-warning">Download collision Info</button>
-    </div-->
-  <!-- Collision table start-->
-    <div class="table-container">
-      <table id="collision-table" class="styled-table">
-        <thead >
-          <tr class="table-header">
-            <th class="styled-table thead tr">Flight 1</th>
-            <th class="styled-table thead tr">Flight 2</th>
-            <th class="styled-table thead tr">Collided Time</th>
-            <th class="styled-table thead tr">Latitude</th>
-            <th class="styled-table thead tr">Longitude</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-  <!-- Collision table end-->
-
-  <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-    <!-- Navbar content -->
-    <span style="margin-left: 40%;">
-      <button class="tab-button" data-target="chart1" style="color: black;">Altitude Plot</button>
-      <button class="tab-button" data-target="chart2" style="color: black;">Speed Plot</button>
-    </span>
   </nav>
 
-  <!-- Chart section start-->
-  <div class="tab-container">
-    
-    
-    <!-- Add more buttons for additional charts if needed -->
-
-    <div id="chart1" class="chart-container" data-xdata="" data-ydata="" data-zdata="">
-      <canvas id="canvas1" width="800" height="500" ></canvas>
-    </div>
-    <div id="chart2" class="chart-container" data-xdata="" data-ydata="" data-zdata="">
-      <canvas id="canvas2" width="800" height="500"></canvas>
-    </div>
-    <!-- Add more chart containers for additional charts if needed -->
+  <!-- MAP LOADER -->
+  <div id="map-loader">
+    <div class="spinner"></div>
+    <p>Loading Simulation...</p>
   </div>
-  <!-- Chart section end-->
-    
 
-    <!------------------------------FOOTER------------->
-    <footer id="theFooter" class="bg-dark text-light py-3">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <h4>About Us</h4>
-            <p>Simulate the flight plans for the purpose of optimization. Allows users to assess and improve airport and airspace capacity and complexity by simulating actual flight plans and more. The software can provide a true terminal to terminal fast time simulation experience.</p>
-          </div>
-          <div class="col-md-3">
-            <h4>Quick Links</h4>
-            <ul class="list-unstyled">
-              <li><a href="home.html">Home</a></li>
-              <li><a href="about.html">About Us</a></li>
-              <li><a href="#">Services</a></li>
-              <li><a href="#">Contact Us</a></li>
-            </ul>
-          </div>
-          <div class="col-md-3">
-            <h4>Contact Us</h4>
-            <ul class="list-unstyled">
-              <li>University of Ruhuna</li>
-              <li>Hapugala,Galle, Sri Lanka 12345</li>
-              <li>Phone: (555) 555-5555</li>
-              <li>Email: info@example.com</li>
-            </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <p class="text-center">&copy; MMSG Software. All Rights Reserved.</p>
-          </div>
-        </div>
+  <!-- MAP -->
+  <div id="map"></div>
+
+  <!-- FLIGHT INFO PANEL -->
+  <div id="slidingComponent">
+    <button id="closeButton" onclick="document.getElementById('slidingComponent').classList.remove('open')">&times;</button>
+    <img id="headerImage" src="images/maxresdefault.jpg" alt="Aircraft">
+    <div id="infoContainer">
+      <label>Callsign</label>
+      <p id="callsignLabel">—</p>
+      <label>Departure Time</label>
+      <p id="departureTimeLabel">—</p>
+      <label>Origin</label>
+      <p id="originLabel">—</p>
+      <label>Destination</label>
+      <p id="destinationLabel">—</p>
+      <label>Routing</label>
+      <p id="routingLabel">—</p>
+      <button type="button" class="btn btn-warning" id="altitude-btn" onclick="showGraph()">
+        📊 Show Altitude &amp; Speed Plots
+      </button>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD BUTTON -->
+  <div id="buttonContainer">
+    <button id="createCSV" type="button">⬇ Download Flight Data</button>
+  </div>
+
+  <!-- COLLISION STRIP -->
+  <div id="collision-strip">
+    <table id="collision-table" class="styled-table">
+      <thead>
+        <tr>
+          <th>⚠ Flight 1</th>
+          <th>Flight 2</th>
+          <th>Time</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- CHART PANEL (slide-up) -->
+  <div id="chart-panel">
+    <div id="chart-panel-header">
+      <div class="chart-tabs">
+        <button class="tab-button active" data-target="chart1">📈 Altitude Plot</button>
+        <button class="tab-button" data-target="chart2">⚡ Speed Plot</button>
       </div>
-    </footer>
-    
+      <button id="close-chart-btn" onclick="document.getElementById('chart-panel').classList.remove('open')">✕</button>
+    </div>
+    <div id="chart-body">
+      <div id="chart1" class="chart-container active" data-xdata="" data-ydata="">
+        <canvas id="canvas1"></canvas>
+      </div>
+      <div id="chart2" class="chart-container" data-xdata="" data-ydata="">
+        <canvas id="canvas2"></canvas>
+      </div>
+    </div>
+  </div>
 
+  <!-- CHART SCRIPT (handles tab switching) -->
+  <script src="js/chart.js"></script>
 
-    <!-- 
-     The `defer` attribute causes the callback to execute after the full HTML
-     document has been parsed. For non-blocking uses, avoiding race conditions,
-     and consistent behavior across browsers, consider loading using Promises
-     with https://www.npmjs.com/package/@googlemaps/js-api-loader.
-    -->
-    <!-- old api
-      src="https://maps.googleapis.com/maps/api/js?key="key"&callback=initMap&v=weekly"
+  <!-- PAGE JS -->
+  <script>
+    // Hide loader when map is ready
+    window.addEventListener('mapReady', function () {
+      var l = document.getElementById('map-loader');
+      if (l) l.style.display = 'none';
+    });
 
-    -->
-    
-    <!-- old api - billing account sanoj-->
-      <script
-      src="https://maps.googleapis.com/maps/api/js?key="key"&libraries=geometry&callback=initMap&v=weekly"
+    // Show collision strip when rows are added
+    var _origInsertRow = HTMLTableElement.prototype.insertRow;
+    var _collisionStrip = document.getElementById('collision-strip');
+    document.getElementById('collision-table').insertRow = function() {
+      var row = _origInsertRow.apply(this, arguments);
+      _collisionStrip.classList.add('has-data');
+      return row;
+    };
 
-      defer
-    ></script>
-    <!--<script
-      src="https://maps.googleapis.com/maps/api/js?key="key"&libraries=geometry&callback=initMap&v=weekly"
-      
-      //AIzaSyAKbjLmYVF0r1ijuawrVz5RDis6qOvrg64
-      defer
-    ></script>-->
-  
-    <script src="chart.js"></script>
+    function showGraph() {
+      var btn = document.getElementById('altitude-btn');
+      var callsign = btn.dataset.info;
+      var time     = btn.value;
+      var name     = btn.name;
 
-    <script>
-      button.addEventListener('click', function () {
-        document.getElementById('chart1').scrollIntoView({behavior: 'smooth'})
-      });
-
-
-      function showGraph(){
-        const altitude_btn = document.getElementById('altitude-btn');
-        const targetElement = document.getElementById('chart1');
-        //altitude_btn.addEventListener('click', function() {
-          targetElement.scrollIntoView({ behavior: 'smooth' }); // Scroll to the target element
-          console.log('scrollllll__________');
-        //});
-        console.log('clicked');
-        
-        
-        let value_callsign = altitude_btn.dataset.info;
-        // clicked flight departure time
-        let value_time = altitude_btn.value;
-        // clicked flight callsign
-        let value_name = altitude_btn.name;
-
-        console.log('time = '+value_time);
-        console.log('callsign = '+value_callsign);
-
-        let char1 = document.getElementById("chart1");
-        let char2 = document.getElementById("chart2");
-
-        fetch(apiUrl+`/grp11/backend/altitudes?username=${username}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body : JSON.stringify({ value_time, value_callsign, value_name })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Process the response here
-            console.log('data')
-            console.log(data);
-            //console.log('altitude_btn.data-xdata = '+altitude_btn.data-xdata)
-            
-            char1.setAttribute('data-ydata', data.altitudes);
-            char1.setAttribute('data-xdata', data.waypoints);
-
-           // char1.setAttribute('data-zdata', altitude_btn.data-custom);
-            console.log("Speeds");
-
-            char2.setAttribute('data-ydata', data.speeds);
-            char2.setAttribute('data-xdata', data.waypoints);
-            //char2.setAttribute('data-zdata', altitude_btn.data-custom);
-
-
-            //console.log('data = '+data);
-            window.location.href = `/grp11/login.html?username=${username}`;
-            //window.location.href = `https://demo.eminenceapps.com/grp11/home.html?username=${username}`;
-
-        })
-        .catch(error => {
-            // Handle any errors here
-            //console.error(error);
-        });
-        altitude_btn.addEventListener('click', function() {
-          targetElement.scrollIntoView({ behavior: 'smooth' }); // Scroll to the target element
-        });
+      if (!callsign || !time || !name) {
+        alert('Click on a flight marker on the map first, then press this button.');
+        return;
       }
-    </script>
-    
-    
-  </body>
+
+      // Open chart panel
+      document.getElementById('chart-panel').classList.add('open');
+
+      fetch(BASE_URL + '/grp11/backend/altitudes?username=' + encodeURIComponent(username), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value_time: time, value_callsign: callsign, value_name: name })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        var c1 = document.getElementById('chart1');
+        var c2 = document.getElementById('chart2');
+
+        c1.dataset.xdata = data.waypoints || '';
+        c1.dataset.ydata = data.altitudes || '';
+        c2.dataset.xdata = data.waypoints || '';
+        c2.dataset.ydata = data.speeds    || '';
+
+        // Trigger altitude tab to render chart
+        document.querySelector('.tab-button[data-target="chart1"]').click();
+      })
+      .catch(function(err) { console.error('showGraph error:', err); });
+    }
+  </script>
+
+</body>
 </html>

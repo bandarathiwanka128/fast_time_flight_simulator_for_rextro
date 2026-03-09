@@ -16,7 +16,7 @@
   <!-- responsive-->
   <link rel="stylesheet" href="css/responsive.css">
   <!-- awesome fontfamily -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
@@ -234,37 +234,44 @@
         <p style="color: rgb(101, 99, 111);font-family: monospace;">**Please make sure to follow the above data format when uploading data.</p>
       </div>
     </div>
-    <script src="config.js"></script>
+    <script src="../js/config.js"></script>
 
 
 </body>
 
 <script>
-  document.getElementById('uploadForm').addEventListener('submit', function(event) {
+ document.getElementById('uploadForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
     const formData = new FormData(this);
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('username');
-    //console.log(username);
-    //fetch(`http://demo.eminenceapps.com/grp11/backend/upload?username=${username}`, {
-    fetch(apiUrl+`/grp11/backend/upload?username=${username}`, {
-      method: 'POST',
-      body: formData
+
+    // FIX username=null issue
+    let urlParams = new URLSearchParams(window.location.search);
+    let username = urlParams.get('username');
+
+    // If user opened home.html directly
+    if (!username || username === "null") {
+        username = "demoUser";   // ← fallback username
+        console.warn("No username found → using demoUser");
+    }
+
+    // Upload request
+    fetch(BASE_URL + `/grp11/backend/upload?username=${username}`, {
+        method: 'POST',
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data.message); // Handle response from server
-      const username = data.message;
+        console.log(data.message);
 
-      //window.location.href = `http://demo.eminenceapps.com/grp11/themap.html?username=${username}`;
-      window.location.href = `/themap.html?username=${username}`;
-
+        // Redirect to map
+        window.location.href = `themap.html?username=${username}`;
     })
     .catch(error => {
-      console.error(error);
+        console.error(error);
     });
-  });
+});
+
 
   
 </script>

@@ -156,37 +156,42 @@ function rearrangeArray(inputString) {
   return outputArray;
 }
   
+// ── SIMULATION CLOCK ──────────────────────────────────────────
+// Starts at 05:00:00, runs 60× faster than real time
+const SIM_CLOCK_START = { h: 5, m: 0, s: 0 };
+const SIM_SPEED = 60; // 1 real second = 60 simulated seconds
+const _simStartReal = Date.now();
+
+function getSimTime() {
+  const elapsedReal = (Date.now() - _simStartReal) / 1000; // real seconds elapsed
+  const elapsedSim  = elapsedReal * SIM_SPEED;             // simulated seconds elapsed
+  const totalSim    = SIM_CLOCK_START.h * 3600 + SIM_CLOCK_START.m * 60 + SIM_CLOCK_START.s + elapsedSim;
+  const h = Math.floor(totalSim / 3600) % 24;
+  const m = Math.floor((totalSim % 3600) / 60);
+  const s = Math.floor(totalSim % 60);
+  return { h, m, s };
+}
+// ──────────────────────────────────────────────────────────────
+
 function compareTime(inputTime, name) {
-  // Split the input time string into hours, minutes, and seconds
   const [inputHours, inputMinutes, inputSeconds] = inputTime.split('.').map(Number);
 
-  // Get the current local machine time as hours, minutes, and seconds
-  const localDate = new Date();
-  const localHours = localDate.getHours();
-  const localMinutes = localDate.getMinutes();
-  const localSeconds = localDate.getSeconds();
+  const sim = getSimTime();
+  const localHours   = sim.h;
+  const localMinutes = sim.m;
+  const localSeconds = sim.s;
 
-  //console.log('callsign = '+name+' ,loacalTIme = '+localHours+':'+localMinutes+':'+localSeconds+', inputTime = '+inputTime);
-  let numMins;
-  if(localMinutes == '00'){
-    numMins = '59';
-  }
-  else{
-    numMins = Number(localMinutes) - 1;
-    numMins = numMins.toString();
-  }
-  
-  // Compare inputTime to local time
   if (inputHours > localHours ||
     (inputHours === localHours && inputMinutes > localMinutes) ||
     (inputHours === localHours && inputMinutes === localMinutes && inputSeconds > localSeconds)) {
-    return false; //inputTime is greater than current local time
-  } else if((inputHours === localHours && inputMinutes === localMinutes && inputSeconds > (localSeconds-6)) ||
-            (inputHours === localHours && inputMinutes === localMinutes && inputSeconds === localSeconds)) {
-
-            //(inputHours === localHours && inputMinutes >= numMins)) {
-    return true; //inputTime is less than or equal to current local time
+    return false;
+  } else if (inputHours === localHours && inputMinutes === localMinutes) {
+    return true;
+  } else if (inputHours < localHours ||
+    (inputHours === localHours && inputMinutes < localMinutes)) {
+    return true;
   }
+  return false;
 }
 
 function flattenAndRemoveDuplicates(array2D) {

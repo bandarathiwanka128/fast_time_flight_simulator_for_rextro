@@ -1,2 +1,1 @@
-//var apiUrl = 'https://demo.eminenceapps.com';
-var apiUrl = '';
+const BASE_URL = "http://localhost:3000";
