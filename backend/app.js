@@ -398,11 +398,9 @@ app.get('/grp11/backend/download-landed-flights', async (req, res) => {
   }
 });
 
-// Fallback - serve index if file exists
+// Root — redirect to the frontend index page
 app.get('/', (req, res) => {
-  const indexPath = path.join(__dirname, 'front-end', 'html', 'index.html');
-  if (fs.existsSync(indexPath)) return res.sendFile(indexPath);
-  res.send('Fast Time Flight Simulator backend');
+  res.redirect('/front-end/html/index.html');
 });
 
 // Start server locally; on Vercel the exported app is used directly
